@@ -819,48 +819,12 @@ layers = 3
 model,kModel,startTime,modelName=runNN(layers,batch,0.5, X_train, y_train, X_test, y_test)
 
 
-# In[14]:
+# Run statistics
 
 
 aucroc,Correlations=checkTraining(model,kModel,'Real')
 print("Signal: ", nsig, "\n All Background: ", nbkg, "\n S/N: ", nsig/nbkg)
 storeModel(model,startTime,modelName,aucroc)
-
-
-# In[15]:
-
-
-val_loss = kModel.history['val_loss']
-loss = kModel.history['loss']
-epochs = []
-
-i = 0
-while i < len(val_loss):
-    epochs.append(i)
-    i += 1
-
-plt.plot(epochs, loss, color='blue', label='Training Loss')
-plt.plot(epochs, val_loss, color='red', label='Test Loss')
-plt.legend(loc='upper right')
-plt.title("Loss Comparisons")
-plt.xlabel('Epoch')
-plt.ylabel('Loss')
-
-
-# In[16]:
-
-
-
-
-precision = kModel.history['precision']
-val_precision = kModel.history['val_precision']
-
-plt.plot(epochs, precision, color='green', label='Training Accuracy')
-plt.plot(epochs, val_precision, color='orange', label='Testing Accuracy')
-plt.legend(loc='lower right')
-plt.title('Accuracy measures')
-plt.xlabel('Epoch')
-plt.ylabel('Precision')
 
 
 # ## Histogramming Proof
@@ -940,7 +904,7 @@ q_mjj = list_qcd['mjj_u']
 
 # In[18]:
 
-
+#Input data review
 
 plt.subplot(211)
 plt.title('MET & Combined Backgrounds')
@@ -1192,17 +1156,7 @@ plt.ylabel('Scores')
 plt.colorbar()
 plt.show()
         
-# plt.hist2d(mjj, combined, bins=(100,100), norm=matplotlib.colors.LogNorm())
-# plt.xlabel('Mjj')
-# plt.ylabel('Scores')
-# plt.title('All Events')
-# plt.yscale('log')
-# plt.colorbar()
-
-#plt.imshow(hist1, norm=matplotlib.colors.LogNorm())
-
-
-# In[20]:
+#File exporting for fitting
 
 
 file_1 = uproot.recreate('/home/jupyter-zdethlof/mario-mapyde/NN_Feedback/Feedback.root')
@@ -1221,9 +1175,7 @@ file_2['signal'] = sig_frame
 file_3['background'] = bkg_frame
 
 
-# ## Feature Testing
-
-# In[21]:
+#Below is simply the Check_training module, just cleaned up to only give the score feedback
 
 
 def ctt_small(kModel, X_train_df, y_train, X_test_df, y_test, drop, bins):
@@ -1313,6 +1265,7 @@ def ctt_small(kModel, X_train_df, y_train, X_test_df, y_test, drop, bins):
 
 # In[22]:
 
+#Plotting the score for NN runs by adding a new feature each run of the Net
 
 K = pd.DataFrame()
 numBranches = 1
@@ -1335,34 +1288,7 @@ for item in Z:
         numBranches += 1
     
 
-
-# In[ ]:
-
-
-#print(Areas)
-
-
-# In[ ]:
-
-
-i = 0
-bmjj = []
-smjj = []
-while i < len(Correlations['scoreb']):
-    if Correlations['scoreb'][i] >= 0.26 and Correlations['scoreb'][i] <= 0.32:
-        bmjj.append(Correlations['bkg'][i])
-    if i < len(Correlations['scores']):
-        if Correlations['scores'][i] >= 0.26 and Correlations['scores'][i] <= 0.32:
-            smjj.append(Correlations['sig'][i])
-    i += 1
-    
-    
-
-plt.hist(bmjj, color='blue', alpha=0.5, bins=20, density=True)
-plt.hist(smjj, color='red', alpha=0.5, bins=20, density=True)
-
-
-# In[ ]:
+#Testing Feedback regions surrounding the spike
 
 
 t_srng = Correlations['scores'][(Correlations['scores']>=0.365)*(Correlations['scores']<=0.370)]
@@ -1743,49 +1669,3 @@ plt.hist(tsig['mjj'], color='red', alpha=0.5, bins=100)
 plt.hist(tbkg['mjj'], color='blue', alpha=0.5, bins=100)
 plt.yscale('log')
 plt.xlim(0,12000)
-
-
-# In[ ]:
-
-
-Zt = Z.drop(["mjj", "weight", "mjj_u"], axis=1)
-plt.xlim(0,12000)
-
-X_df = pd.DataFrame(X)
-i = 0
-for feature in Zt:
-    plt.figure(figsize=(15,10))
-    plt.subplot(11,2,i)
-    plt.hist(Zt[feature], bins=100)
-    plt.title(feature)
-    plt.subplot(11,2,i+1)
-    plt.hist(X_df[i], bins=100)
-    plt.title(('X_df', feature))
-    i+=1
-
-
-# In[ ]:
-
-
-for item in Z_df:
-    if item != 'weight' and item != 'mjj' and 'mjj_u':
-        print(item)
-
-
-# In[ ]:
-
-
-
-
-
-# In[ ]:
-
-
-
-
-
-# In[ ]:
-
-
-
-
